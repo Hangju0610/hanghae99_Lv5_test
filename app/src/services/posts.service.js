@@ -24,6 +24,7 @@ class PostService {
     });
   };
 
+  // 게시글 하나 조회
   findPost = async (postId) => {
     const post = await this.postRepository.findPostByPostId(postId);
     if (!post) throw new Error('게시글이 없습니다.');
@@ -40,6 +41,7 @@ class PostService {
     };
   };
 
+  // 게시글 생성
   createPost = async (userId, title, content) => {
     const createPostData = await this.postRepository.createPost(
       userId,
@@ -56,7 +58,7 @@ class PostService {
       postId,
       userId
     );
-    if (validatePost) throw new Error('편집 권한이 없습니다.');
+    if (!validatePost) throw new Error('편집 권한이 없습니다.');
 
     const updatePostData = await this.postRepository.updatePost(
       postId,
@@ -73,7 +75,7 @@ class PostService {
       postId,
       userId
     );
-    if (validatePost) throw new Error('삭제 권한이 없습니다.');
+    if (!validatePost) throw new Error('삭제 권한이 없습니다.');
 
     const deletePostData = await this.postRepository.deletePost(postId, userId);
 
