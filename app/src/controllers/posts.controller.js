@@ -51,11 +51,12 @@ class PostController {
   updatePost = async (req, res, next) => {
     try {
       const { userId } = res.locals.user;
-      const { postId, title, content } = req.body;
+      const { postId } = req.params;
+      const { title, content } = req.body;
 
       const updatePostData = await this.postService.updatePost(
-        userId,
         postId,
+        userId,
         title,
         content
       );
@@ -71,9 +72,9 @@ class PostController {
   deletePost = async (req, res, next) => {
     try {
       const { userId } = res.locals.user;
-      const { postId } = req.body;
+      const { postId } = req.params;
 
-      const deletePostData = await this.postService.deletePost(userId, postId);
+      const deletePostData = await this.postService.deletePost(postId, userId);
 
       res.status(200).json({ data: deletePostData });
     } catch (error) {

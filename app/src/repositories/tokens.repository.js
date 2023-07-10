@@ -8,6 +8,13 @@ class TokenRepository {
     return findRefreshToken;
   };
 
+  // userId 찾기
+  findUserByToken = async (refreshToken) => {
+    const findUserId = await RefreshTokens.findOne({ where: { refreshToken } });
+
+    return findUserId;
+  };
+
   // refreshToken 생성
   createRefreshToken = async (refreshToken, userId) => {
     const createToken = await RefreshTokens.create({ refreshToken, userId });
@@ -23,7 +30,6 @@ class TokenRepository {
         where: { userId },
       }
     );
-
     return updateToken;
   };
 }

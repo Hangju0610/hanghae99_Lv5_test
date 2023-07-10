@@ -1,4 +1,4 @@
-const { Posts } = require('../models');
+const { Posts, Users, Likes, sequelize } = require('../models');
 const { Op } = require('sequelize');
 
 class PostRepository {
@@ -8,7 +8,6 @@ class PostRepository {
       attributes: [
         'postId',
         'userId',
-        'Users.nickname',
         'title',
         [sequelize.fn('COUNT', sequelize.col('Likes.postId')), 'likes'],
         'createdAt',
@@ -17,7 +16,7 @@ class PostRepository {
       include: [
         {
           model: Users,
-          attributes: [],
+          attributes: ['nickname'],
           required: false,
         },
         {
@@ -40,7 +39,6 @@ class PostRepository {
       attributes: [
         'postId',
         'userId',
-        'Users.nickname',
         'title',
         'content',
         [sequelize.fn('COUNT', sequelize.col('Likes.postId')), 'likes'],
@@ -50,7 +48,7 @@ class PostRepository {
       include: [
         {
           model: Users,
-          attributes: [],
+          attributes: ['nickname'],
           required: false,
         },
         {
@@ -99,7 +97,7 @@ class PostRepository {
   };
 
   deletePost = async (postId) => {
-    const deletePostData = await Posts.delete({ where: { postId } });
+    const deletePostData = await Posts.destroy({ where: { postId } });
 
     return deletePostData;
   };

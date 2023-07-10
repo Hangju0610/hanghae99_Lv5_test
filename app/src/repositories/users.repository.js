@@ -13,6 +13,12 @@ class UserRepository {
     return user;
   };
 
+  findUserByUserId = async (userId) => {
+    const user = await Users.findOne({ where: { userId } });
+
+    return user;
+  };
+
   createUser = async (email, nickname, password) => {
     const createUserData = await Users.create({
       email,

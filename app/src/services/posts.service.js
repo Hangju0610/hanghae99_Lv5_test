@@ -15,7 +15,7 @@ class PostService {
       return {
         postId: post.postId,
         userId: post.userId,
-        nickname: post.nickname,
+        nickname: post['User.nickname'],
         title: post.title,
         likes: post.likes,
         createdAt: post.createdAt,
@@ -32,7 +32,7 @@ class PostService {
     return {
       postId: post.postId,
       userId: post.userId,
-      nickname: post.nickname,
+      nickname: post['User.nickname'],
       title: post.title,
       content: post.content,
       likes: post.likes,
@@ -58,6 +58,7 @@ class PostService {
       postId,
       userId
     );
+    console.log(validatePost);
     if (!validatePost) throw new Error('편집 권한이 없습니다.');
 
     const updatePostData = await this.postRepository.updatePost(
@@ -75,6 +76,7 @@ class PostService {
       postId,
       userId
     );
+
     if (!validatePost) throw new Error('삭제 권한이 없습니다.');
 
     const deletePostData = await this.postRepository.deletePost(postId, userId);

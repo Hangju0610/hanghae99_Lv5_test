@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       // Users와 N:1 설정
       this.belongsTo(models.Users, {
         foreignKey: 'userId',
+        targetKey: 'userId',
         onDelete: 'CASCAED',
         onUpdate: 'CASCAED',
       });
@@ -19,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       //Posts와 N:1 설정
       this.belongsTo(models.Posts, {
         foreignKey: 'postId',
+        targetKet: 'postId',
         onDelete: 'CASCAED',
         onUpdate: 'CASCAED',
       });
