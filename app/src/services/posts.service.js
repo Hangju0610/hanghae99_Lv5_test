@@ -27,7 +27,11 @@ class PostService {
   // 게시글 하나 조회
   findPost = async (postId) => {
     const post = await this.postRepository.findPostByPostId(postId);
-    if (!post) throw new Error('게시글이 없습니다.');
+    if (!post) {
+      const error = new Error('게시글이 존재하지 않습니다.'); // ERROR 생성자를 통해 message 전달
+      error.status = 404; // ERROR 객체를 통해서 Status 추가
+      throw error;
+    }
 
     return {
       postId: post.postId,
@@ -53,13 +57,24 @@ class PostService {
   };
 
   updatePost = async (postId, userId, title, content) => {
+    // 게시글 확인
+    const post = await this.postRepository.findPostByPostId(postId);
+    if (!post) {
+      const error = new Error('게시글이 존재하지 않습니다.'); // ERROR 생성자를 통해 message 전달
+      error.status = 404; // ERROR 객체를 통해서 Status 추가
+      throw error;
+    }
+
     // 편집 권한 확인
     const validatePost = await this.postRepository.validatePostByUserId(
       postId,
       userId
     );
-    console.log(validatePost);
-    if (!validatePost) throw new Error('편집 권한이 없습니다.');
+    if (!validatePost) {
+      const error = new Error('게시글의 편집 권한이 없습니다.'); // ERROR 생성자를 통해 message 전달
+      error.status = 403; // ERROR 객체를 통해서 Status 추가
+      throw error;
+    }
 
     const updatePostData = await this.postRepository.updatePost(
       postId,
@@ -71,13 +86,25 @@ class PostService {
   };
 
   deletePost = async (postId, userId) => {
+    // 게시글 확인
+    const post = await this.postRepository.findPostByPostId(postId);
+    if (!post) {
+      const error = new Error('게시글이 존재하지 않습니다.'); // ERROR 생성자를 통해 message 전달
+      error.status = 404; // ERROR 객체를 통해서 Status 추가
+      throw error;
+    }
+
     // 삭제 권한 확인
     const validatePost = await this.postRepository.validatePostByUserId(
       postId,
       userId
     );
 
-    if (!validatePost) throw new Error('삭제 권한이 없습니다.');
+    if (!validatePost) {
+      const error = new Error('게시글의 삭제 권한이 없습니다.'); // ERROR 생성자를 통해 message 전달
+      error.status = 403; // ERROR 객체를 통해서 Status 추가
+      throw error;
+    }
 
     const deletePostData = await this.postRepository.deletePost(postId, userId);
 

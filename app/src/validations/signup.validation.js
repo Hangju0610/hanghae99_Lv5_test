@@ -21,7 +21,7 @@ const signupSchema = joi.object({
   }),
   confirmPassword: joi.string().valid(joi.ref('password')).required().messages({
     'string.base': '비밀번호 확인은 문자열이어야 합니다.',
-    'any.only': '비밀번호와 일치해야 합니다.',
+    'any.only': '비밀번호가 일치하지 않습니다.',
     'any.required': '요청한 데이터 형식이 올바르지 않습니다.',
     'string.empty': '비밀번호 확인은 필수 항목입니다.',
   }),

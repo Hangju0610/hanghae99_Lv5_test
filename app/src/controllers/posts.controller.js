@@ -1,4 +1,5 @@
 const PostService = require('../services/posts.service');
+const { postSchema } = require('../validations/posts.validation');
 
 class PostController {
   postService = new PostService();
@@ -10,8 +11,10 @@ class PostController {
 
       res.status(200).json({ data: posts });
     } catch (error) {
-      console.log(error);
-      res.json({ errorMessege: error });
+      if (error.status)
+        // Error 객체의 Error.status와 메세지 출력
+        return res.status(error.status).json({ errorMessage: error.message });
+      res.json({ errorMessage: error.message }); // 해당되는 에러가 아닌 경우, json으로 error 확인
     }
   };
 
@@ -23,8 +26,10 @@ class PostController {
 
       res.status(200).json({ data: post });
     } catch (error) {
-      console.log(error);
-      res.json({ errorMessege: error });
+      if (error.status)
+        // Error 객체의 Error.status와 메세지 출력
+        return res.status(error.status).json({ errorMessage: error.message });
+      res.json({ errorMessage: error.message }); // 해당되는 에러가 아닌 경우, json으로 error 확인
     }
   };
 
@@ -34,16 +39,23 @@ class PostController {
       const { userId } = res.locals.user;
       const { title, content } = req.body;
 
+      // 데이터 형식이 올바르지 않은 경우
+      const { error } = postSchema.validate(title, content);
+      if (error)
+        return res.status(412).json({ errorMessage: error.details[0].message });
+
       const createPostData = await this.postService.createPost(
         userId,
         title,
         content
       );
 
-      res.status(200).json({ data: createPostData });
+      res.status(201).json({ createPostData });
     } catch (error) {
-      console.log(error);
-      res.json({ errorMessege: error });
+      if (error.status)
+        // Error 객체의 Error.status와 메세지 출력
+        return res.status(error.status).json({ errorMessage: error.message });
+      res.json({ errorMessage: error.message }); // 해당되는 에러가 아닌 경우, json으로 error 확인
     }
   };
 
@@ -54,6 +66,11 @@ class PostController {
       const { postId } = req.params;
       const { title, content } = req.body;
 
+      // 데이터 형식이 올바르지 않은 경우
+      const { error } = postSchema.validate(title, content);
+      if (error)
+        return res.status(412).json({ errorMessage: error.details[0].message });
+
       const updatePostData = await this.postService.updatePost(
         postId,
         userId,
@@ -61,10 +78,12 @@ class PostController {
         content
       );
 
-      res.status(200).json({ data: updatePostData });
+      res.status(200).json({ updatePostData });
     } catch (error) {
-      console.log(error);
-      res.json({ errorMessage: error });
+      if (error.status)
+        // Error 객체의 Error.status와 메세지 출력
+        return res.status(error.status).json({ errorMessage: error.message });
+      res.json({ errorMessage: error.message }); // 해당되는 에러가 아닌 경우, json으로 error 확인
     }
   };
 
@@ -76,10 +95,12 @@ class PostController {
 
       const deletePostData = await this.postService.deletePost(postId, userId);
 
-      res.status(200).json({ data: deletePostData });
+      res.status(200).json({ deletePostData });
     } catch (error) {
-      console.log(error);
-      res.json({ errorMessage: error });
+      if (error.status)
+        // Error 객체의 Error.status와 메세지 출력
+        return res.status(error.status).json({ errorMessage: error.message });
+      res.json({ errorMessage: error.message }); // 해당되는 에러가 아닌 경우, json으로 error 확인
     }
   };
 }

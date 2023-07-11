@@ -20,6 +20,12 @@ class UserController {
         return res.status(412).json({ errorMessage: error.details[0].message });
 
       // 이메일 아이디가 비밀번호에 포함되어 있는지 검사
+      const emailId = email.split('@');
+      const passwordTest = new RegExp(`${emailId[0]}`);
+      if (passwordTest.test(password))
+        return res.status(412).json({
+          errorMessage: '비밀번호에 이메일 아이디가 포함되어 있습니다.',
+        });
 
       // user 서비스로 보내기
       const createUserData = await this.userService.createUser(
@@ -29,9 +35,11 @@ class UserController {
       );
 
       res.status(201).json({ data: createUserData });
-    } catch (Error) {
-      console.log(Error);
-      res.json({ errorMessage: Error });
+    } catch (error) {
+      if (error.status)
+        // Error 객체의 Error.status와 메세지 출력
+        return res.status(error.status).json({ errorMessage: error.message });
+      res.json({ errorMessage: error.message }); // 해당되는 에러가 아닌 경우, json으로 error 확인
     }
   };
 
@@ -56,9 +64,13 @@ class UserController {
       res.cookie('refreshToken', loginUser.refreshToken);
 
       res.status(201).json({ loginUser });
-    } catch (Error) {
-      console.log(Error);
-      res.json({ errorMessage: Error });
+    } catch (error) {
+      console.log(error);
+      // Error 객체의 Error.status와 메세지 출력
+      if (error.status)
+        // Error 객체의 Error.status와 메세지 출력
+        return res.status(error.status).json({ errorMessage: error.message });
+      res.json({ errorMessage: error.message }); // 해당되는 에러가 아닌 경우, json으로 error 확인
     }
   };
 }

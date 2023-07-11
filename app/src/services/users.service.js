@@ -12,11 +12,19 @@ class UserService {
   createUser = async (email, nickname, password) => {
     // Email 및 nickname 검증
     const isExistEmail = await this.userRepository.findUserByEmail(email);
-    if (isExistEmail) throw new Error('이미 있는 Email입니다.');
+    if (isExistEmail) {
+      const error = new Error('존재하는 Email입니다.');
+      error.status = 412;
+      throw error;
+    }
     const isExistNickname = await this.userRepository.findUserByNickname(
       nickname
     );
-    if (isExistNickname) throw new Error('이미 있는 nickname입니다.');
+    if (isExistNickname) {
+      const error = new Error('존재하는 닉네임입니다.');
+      error.status = 412;
+      throw error;
+    }
 
     // 비밀번호 암호화
     const salt = await bcrypt.genSalt(parseInt(process.env.BCRYPT_SALT));
@@ -36,10 +44,19 @@ class UserService {
   loginUser = async (email, password) => {
     // email에 있는 데이터 찾아오기
     const findUser = await this.userRepository.findUserByEmail(email);
-    if (!findUser) throw new Error('없는 이메일입니다.');
+    if (!findUser) {
+      const error = new Error('닉네임 또는 패스워드를 확인해주세요.');
+      error.status = 412;
+      throw error;
+    }
+
     // 비밀번호 일치여부 확인
     const validPassword = await bcrypt.compare(password, findUser.password);
-    if (!validPassword) throw new Error('비밀번호가 올바르지 않습니다.');
+    if (!validPassword) {
+      const error = new Error('닉네임 또는 패스워드를 확인해주세요.');
+      error.status = 412;
+      throw error;
+    }
 
     // 토큰 발급
     const accessToken = jwt.sign(
@@ -111,8 +128,11 @@ class UserService {
 
     // refreshToken이 만료된 경우 => false를 반환하기에 !붙인다.
     // Error처리로 토스한다.
-    if (!refreshTokenData) throw new Error('refreshToken이 만료되었습니다.');
-
+    if (!refreshTokenData) {
+      const error = new Error('로그인이 필요한 기능입니다.');
+      error.status = 403;
+      throw error;
+    }
     // accessToken이 만료된 경우
     // Case를 나눠서 if와 Else로 조작
     // 1. AccessToken이 만료된 경우
@@ -121,8 +141,11 @@ class UserService {
       const findUser = await this.tokenRepository.findUserByToken(refreshToken);
       //refresh 토큰이 정상적이지 않은 경우
       // 토큰 자체가 정상적이지만, 탈취를 당했거나 고의적으로 만료한 경우
-      if (!findUser)
-        throw new Error('Refresh Token의 정보가 서버에 존재하지 않습니다.');
+      if (!findUser) {
+        const error = new Error('전달된 쿠키에서 에러가 발생했습니다.');
+        error.status = 403;
+        throw error;
+      }
 
       // AccessToken 새로 생성
       const newAccessToken = jwt.sign(
