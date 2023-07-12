@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const UserService = require('../services/users.service');
 
 const userService = new UserService();

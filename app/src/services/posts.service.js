@@ -1,15 +1,15 @@
 const PostRepository = require('../repositories/posts.repository');
+// 생성자 주입으로 변경
+// const { Posts } = require('../models');
 
 class PostService {
   postRepository = new PostRepository();
+  // 의존성 주입
+  // postRepository = new PostRepository(Posts);
 
   // 게시물 전체 조회
   findAllPost = async () => {
     const allPost = await this.postRepository.findAllPost();
-
-    allPost.sort((a, b) => {
-      return b.createdAt - a.createdAt;
-    });
 
     return allPost.map((post) => {
       return {

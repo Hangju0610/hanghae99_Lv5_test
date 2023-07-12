@@ -2,6 +2,11 @@ const { Posts, Users, Likes, sequelize } = require('../models');
 const { Op } = require('sequelize');
 
 class PostRepository {
+  // // 의존성 주입을 위한 생성자
+  // constructor(postsModel) {
+  //   this.postsModel = postsModel;
+  // }
+
   // DB에서 게시글 전체 조회하기(Like, nickname 포함)
   findAllPost = async () => {
     const allPost = await Posts.findAll({
@@ -29,6 +34,8 @@ class PostRepository {
       order: [['createdAt', 'DESC']],
       raw: true,
     });
+
+    // const allPost = await this.postsModel.findAll();
 
     return allPost;
   };
@@ -63,15 +70,20 @@ class PostRepository {
       raw: true,
     });
 
+    // 테스트 코드용
+    // const post = await this.postsModel.findOne(postId);
+
     return post;
   };
 
   // 편집 및 삭제 권한용 DB 데이터 확인
   validatePostByUserId = async (postId, userId) => {
     const validatePost = await Posts.findOne({
+      attributes: ['postId', 'userId'],
       where: {
         [Op.and]: [{ postId }, { userId }],
       },
+      raw: true,
     });
 
     return validatePost;

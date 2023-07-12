@@ -1,11 +1,11 @@
 const PostService = require('../services/posts.service');
-const { postSchema } = require('../validations/posts.validation');
+const postSchema = require('../validations/posts.validation');
 
 class PostController {
   postService = new PostService();
 
   // 게시물 전체 조회
-  getPosts = async (_, res, next) => {
+  getPosts = async (req, res, next) => {
     try {
       const posts = await this.postService.findAllPost();
 
@@ -40,9 +40,11 @@ class PostController {
       const { title, content } = req.body;
 
       // 데이터 형식이 올바르지 않은 경우
-      const { error } = postSchema.validate(title, content);
-      if (error)
+      const { error } = postSchema.validate({ title, content });
+      if (error) {
+        console.log(error);
         return res.status(412).json({ errorMessage: error.details[0].message });
+      }
 
       const createPostData = await this.postService.createPost(
         userId,
@@ -67,7 +69,7 @@ class PostController {
       const { title, content } = req.body;
 
       // 데이터 형식이 올바르지 않은 경우
-      const { error } = postSchema.validate(title, content);
+      const { error } = postSchema.validate({ title, content });
       if (error)
         return res.status(412).json({ errorMessage: error.details[0].message });
 

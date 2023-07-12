@@ -63,7 +63,7 @@ class UserService {
       { userId: findUser.userId },
       process.env.JWT_ACCESS,
       {
-        expiresIn: '10s',
+        expiresIn: '30s',
       }
     );
     const refreshToken = jwt.sign({}, process.env.JWT_REFRESH, {
@@ -99,7 +99,10 @@ class UserService {
   // AccessToken 유효성 검사
   validateAccessToken = (accessToken) => {
     try {
-      const validateAccessTokenData = jwt.verify(accessToken, JWT_ACCESS);
+      const validateAccessTokenData = jwt.verify(
+        accessToken,
+        process.env.JWT_ACCESS
+      );
       // 인증될 경우 데이터 반환
       return validateAccessTokenData;
     } catch (error) {
@@ -151,7 +154,7 @@ class UserService {
       const newAccessToken = jwt.sign(
         { userId: findUser.userId },
         process.env.JWT_ACCESS,
-        { expiresIn: '10s' }
+        { expiresIn: '30s' }
       );
       // refresh Token 정보에서 userId를 통해 Users 정보 확보.
       const user = await this.userRepository.findUserByUserId(findUser.userId);

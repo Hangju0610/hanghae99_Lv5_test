@@ -12,3 +12,5 @@ const postSchema = joi.object({
     'string.empty': '내용을 입력해주세요.',
   }),
 });
+
+module.exports = postSchema;
