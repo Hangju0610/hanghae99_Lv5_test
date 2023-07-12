@@ -25,8 +25,8 @@ module.exports = (sequelize, DataTypes) => {
 
       //Likes 관계 테이블을 통해 Users와 N:M 설정
       this.hasMany(models.Likes, {
-        sourceKey: 'userId',
-        foreignKey: 'userId',
+        sourceKey: 'postId',
+        foreignKey: 'postId',
       });
     }
   }

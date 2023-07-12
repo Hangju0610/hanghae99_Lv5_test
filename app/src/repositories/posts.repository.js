@@ -22,19 +22,16 @@ class PostRepository {
         {
           model: Users,
           attributes: ['nickname'],
-          required: false,
         },
         {
           model: Likes,
           attriubtes: [],
-          required: false,
         },
       ],
       group: ['postId'],
       order: [['createdAt', 'DESC']],
       raw: true,
     });
-
     // const allPost = await this.postsModel.findAll();
 
     return allPost;
@@ -74,6 +71,43 @@ class PostRepository {
     // const post = await this.postsModel.findOne(postId);
 
     return post;
+  };
+
+  // 좋아요한 게시물 찾기용
+  findPostOrderLike = async (userId) => {
+    console.log(userId);
+    const allPost = await Posts.findAll({
+      attributes: [
+        'postId',
+        'userId',
+        'title',
+        [sequelize.fn('COUNT', sequelize.col('Likes.postId')), 'likes'],
+        'createdAt',
+        'updatedAt',
+      ],
+      include: [
+        {
+          model: Users,
+          attributes: ['nickname'],
+        },
+        {
+          model: Likes,
+          attributes: [],
+        },
+      ],
+      where: {
+        postId: {
+          [Op.in]: sequelize.literal(
+            `(SELECT postId FROM Likes WHERE userId = ${userId})`
+          ),
+        },
+      },
+      order: [[sequelize.literal('likes'), 'DESC']],
+      group: ['postId'],
+      raw: true,
+    });
+
+    return allPost;
   };
 
   // 편집 및 삭제 권한용 DB 데이터 확인
