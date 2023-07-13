@@ -42,8 +42,9 @@ class PostController {
       // 데이터 형식이 올바르지 않은 경우
       const { error } = postSchema.validate({ title, content });
       if (error) {
-        console.log(error);
-        return res.status(412).json({ errorMessage: error.details[0].message });
+        const errorValidation = new Error(error.details[0].message);
+        errorValidation.status = 412;
+        throw errorValidation;
       }
 
       const createPostData = await this.postService.createPost(
@@ -70,8 +71,11 @@ class PostController {
 
       // 데이터 형식이 올바르지 않은 경우
       const { error } = postSchema.validate({ title, content });
-      if (error)
-        return res.status(412).json({ errorMessage: error.details[0].message });
+      if (error) {
+        const errorValidation = new Error(error.details[0].message);
+        errorValidation.status = 412;
+        throw errorValidation;
+      }
 
       const updatePostData = await this.postService.updatePost(
         postId,
